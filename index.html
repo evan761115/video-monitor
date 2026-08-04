@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>影音熱點雷達｜媒體影音監測系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0B0E14;
+    --panel: #141922;
+    --panel-2: #1B212C;
+    --line: #262E3B;
+    --text: #EDEFF4;
+    --text-dim: #8892A6;
+    --text-faint: #545E70;
+    --hot: #FF3B5C;
+    --hot-dim: #4A1B26;
+    --rank: #2DE1C2;
+    --rank-dim: #123B34;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 4rem;
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  /* header */
+  header{
+    padding: 2.5rem 5vw 2rem;
+    border-bottom: 1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:flex-end; gap:2rem; flex-wrap:wrap;
+    position:relative; overflow:hidden;
+  }
+  header::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:2px;
+    background: repeating-linear-gradient(90deg, var(--hot) 0 24px, transparent 24px 48px);
+    opacity:.5;
+  }
+  .brand-eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:.18em;
+    color: var(--hot); text-transform:uppercase; display:flex; align-items:center; gap:8px; margin-bottom:.6rem;
+  }
+  .dot-live{ width:7px; height:7px; border-radius:50%; background:var(--hot); animation:pulse 1.6s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.25} }
+  h1{ font-size: clamp(28px,4vw,42px); font-weight:900; letter-spacing:-.02em; line-height:1.1; }
+  .sub{ color: var(--text-dim); font-size:14px; margin-top:.5rem; max-width:520px; line-height:1.6; }
+  .stat-row{ display:flex; gap:2.2rem; }
+  .stat{ text-align:right; }
+  .stat .num{ font-family:'JetBrains Mono', monospace; font-size:28px; font-weight:700; color:var(--rank); }
+  .stat .lbl{ font-size:11px; color:var(--text-faint); letter-spacing:.08em; text-transform:uppercase; }
+
+  /* demo banner */
+  .banner{
+    margin: 1.4rem 5vw 0; padding: .8rem 1.2rem; background: var(--panel);
+    border:1px solid var(--line); border-left:3px solid var(--rank);
+    font-size:13px; color: var(--text-dim); border-radius:0 6px 6px 0;
+    display:flex; gap:.6rem; align-items:flex-start;
+  }
+  .banner b{ color:var(--text); }
+
+  /* wall */
+  .wall-head{ margin: 2.4rem 5vw 1rem; display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:.6rem;}
+  .wall-head h2{ font-size:15px; letter-spacing:.06em; color:var(--text-dim); font-weight:500; text-transform:uppercase; }
+  .wall-head span{ font-size:12px; color:var(--text-faint); font-family:'JetBrains Mono', monospace; }
+
+  .wall{
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr));
+    gap: 1px; background: var(--line);
+    margin: 0 5vw; border:1px solid var(--line);
+  }
+  .tile{
+    background: var(--panel); padding: 0; cursor:pointer; position:relative;
+    transition: background .15s ease;
+    display:flex; flex-direction:column;
+  }
+  .tile:hover{ background: var(--panel-2); }
+  .tile.active{ background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--hot); }
+  .tile-top{ display:flex; align-items:center; justify-content:space-between; padding: .7rem .8rem .5rem; }
+  .badge{
+    font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700; letter-spacing:.03em;
+    padding: 3px 7px; border-radius:3px; color:#0B0E14;
+  }
+  .chan-dot{ width:6px; height:6px; border-radius:50%; background:var(--hot); }
+  .thumb{
+    margin: 0 .8rem; height:88px; border-radius:4px; position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .thumb .play{
+    width:34px; height:34px; border-radius:50%; background: rgba(0,0,0,.35);
+    display:flex; align-items:center; justify-content:center; backdrop-filter: blur(1px);
+  }
+  .thumb .play::after{
+    content:""; width:0; height:0; margin-left:3px;
+    border-top:7px solid transparent; border-bottom:7px solid transparent; border-left:11px solid #fff;
+  }
+  .thumb .scan{ position:absolute; inset:0; background: repeating-linear-gradient(180deg, rgba(255,255,255,.04) 0 2px, transparent 2px 4px); }
+  .tile-body{ padding: .8rem .9rem 1rem; flex:1; display:flex; flex-direction:column; gap:.5rem;}
+  .tile-title{ font-size:13.5px; font-weight:500; line-height:1.5; }
+  .tile-meta{ display:flex; justify-content:space-between; align-items:center; margin-top:auto; }
+  .heat{ display:flex; align-items:center; gap:5px; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--hot); }
+  .heat svg{ width:11px; height:11px; }
+  .time{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-faint); }
+
+  /* detail panel */
+  .panel-wrap{ margin: 3rem 5vw 0; display:none; }
+  .panel-wrap.show{ display:block; }
+  .panel-head{ display:flex; align-items:center; gap:12px; margin-bottom: 1.2rem; flex-wrap:wrap; }
+  .panel-head .badge-lg{
+    font-family:'JetBrains Mono', monospace; font-weight:700; font-size:13px; padding:5px 10px; border-radius:4px; color:#0B0E14;
+  }
+  .panel-head h3{ font-size:19px; font-weight:700; }
+  .panel-head .close{
+    margin-left:auto; background:none; border:1px solid var(--line); color:var(--text-dim);
+    font-family:'JetBrains Mono', monospace; font-size:12px; padding:6px 12px; border-radius:4px; cursor:pointer;
+  }
+  .panel-head .close:hover{ border-color:var(--text-dim); color:var(--text); }
+
+  .top10{ border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .row{
+    display:grid; grid-template-columns: 52px 1fr 90px 84px; align-items:center;
+    padding: .85rem 1.1rem; border-bottom:1px solid var(--line); gap:1rem;
+  }
+  .row:last-child{ border-bottom:none; }
+  .row:hover{ background: var(--panel-2); }
+  .rank{ font-family:'JetBrains Mono', monospace; font-weight:700; font-size:16px; color: var(--text-faint); }
+  .row:nth-child(1) .rank, .row:nth-child(2) .rank, .row:nth-child(3) .rank{ color: var(--rank); }
+  .row-title{ font-size:14px; line-height:1.5; }
+  .row-title .tag{
+    display:inline-block; font-size:10.5px; color:var(--rank); border:1px solid var(--rank-dim);
+    background:var(--rank-dim); padding:1px 6px; border-radius:3px; margin-right:6px; vertical-align:1px;
+  }
+  .row-views{ font-family:'JetBrains Mono', monospace; font-size:12.5px; color:var(--text-dim); text-align:right; }
+  .row-time{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-faint); text-align:right; }
+  .col-head{
+    display:grid; grid-template-columns: 52px 1fr 90px 84px; padding: .6rem 1.1rem;
+    font-size:11px; color:var(--text-faint); letter-spacing:.06em; text-transform:uppercase; gap:1rem;
+    border-bottom:1px solid var(--line); background:var(--panel);
+  }
+  .col-head span:nth-child(3), .col-head span:nth-child(4){ text-align:right; }
+
+  .empty-hint{ margin: 3rem 5vw; color:var(--text-faint); font-size:13px; text-align:center; padding:2rem; border:1px dashed var(--line); border-radius:6px; }
+
+  footer{ margin: 3rem 5vw 0; padding-top:1.5rem; border-top:1px solid var(--line); color:var(--text-faint); font-size:12px; line-height:1.8; }
+  footer b{ color:var(--text-dim); }
+
+  @media (max-width:640px){
+    header{ padding:2rem 5vw 1.5rem; }
+    .stat-row{ gap:1.2rem; }
+    .row, .col-head{ grid-template-columns: 34px 1fr 70px; }
+    .row-time{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand-eyebrow"><span class="dot-live"></span>on air monitor</div>
+    <h1>影音熱點雷達</h1>
+    <p class="sub">彙整各家主流媒體當前最熱門的影音新聞，掌握對手動態，即時掌握自家跟進方向。</p>
+  </div>
+  <div class="stat-row">
+    <div class="stat"><div class="num mono" id="statChannels">14</div><div class="lbl">監測媒體</div></div>
+    <div class="stat"><div class="num mono" id="statUpdated">--:--</div><div class="lbl">最後更新</div></div>
+  </div>
+</header>
+
+<div class="banner" id="dataBanner">
+  <span style="color:var(--rank)">●</span>
+  <div id="dataBannerText"><b>正在讀取 data.json…</b> 找不到的話會先顯示示範資料。把 <code class="mono">scraper/fetch_media.py</code> 產出的 <code class="mono">data.json</code> 放在跟這個網頁同一層資料夾，重新整理就會換成即時內容。</div>
+</div>
+
+<div class="wall-head">
+  <h2>各媒體目前最熱影音・一覽牆</h2>
+  <span id="wallHint">點選任一媒體，展開當日影音熱門 TOP 10</span>
+</div>
+
+<div class="wall" id="wall"></div>
+
+<div class="panel-wrap" id="panelWrap">
+  <div class="panel-head">
+    <span class="badge-lg" id="panelBadge"></span>
+    <h3 id="panelTitle"></h3>
+    <button class="close" id="closeBtn">關閉 ✕</button>
+  </div>
+  <div class="top10">
+    <div class="col-head">
+      <span>排名</span><span>影音標題</span><span>觀看數</span><span>發布</span>
+    </div>
+    <div id="rowsWrap"></div>
+  </div>
+</div>
+
+<div class="empty-hint" id="emptyHint">⌃ 點選上方任一媒體方塊，查看該媒體今日娛樂影音 TOP 10</div>
+
+<footer>
+  <div><b>資料範圍：</b>TVBS、聯合新聞網、緯來新聞、東森新聞、三立新聞網、自由娛樂、中時電子報、NOWnews、壹蘋新聞、鏡新聞、鏡週刊、中央社、民視、八大電視</div>
+  <div><b>即時資料：</b>參見隨附的 scraper/ 資料夾與 README，內含抓取腳本與部署說明。</div>
+</footer>
+
+<script>
+const SAMPLE_MEDIA = [
+  { id:'tvbs', name:'TVBS', color:'#E63946',
+    hot:{ title:'金鐘視后婚宴曝光！全場嘉賓卡司驚喜連連', views:128000, time:'42 分鐘前' },
+    top10:[
+      {t:'金鐘視后婚宴曝光！全場嘉賓卡司驚喜連連', tag:'戲劇星聞', v:128000, time:'42 分前'},
+      {t:'人氣男團突襲快閃 信義區萬人塞爆', tag:'音樂', v:96500, time:'1 小時前'},
+      {t:'新戲首映紅毯 女神身材全被鏡頭捕捉', tag:'電影', v:81200, time:'2 小時前'},
+      {t:'綜藝天王主持新節目 開播收視報喜', tag:'綜藝', v:73400, time:'3 小時前'},
+      {t:'資深藝人罹病消息證實 經紀公司發聲明', tag:'焦點', v:69800, time:'3 小時前'},
+      {t:'選秀節目淘汰賽爆冷 網友吵翻', tag:'綜藝', v:61200, time:'4 小時前'},
+      {t:'偶像劇取景地曝光 粉絲朝聖人潮不斷', tag:'戲劇星聞', v:54700, time:'5 小時前'},
+      {t:'金曲得主開唱曲目全公開', tag:'音樂', v:49300, time:'6 小時前'},
+      {t:'演員片場受傷畫面流出 團隊回應', tag:'焦點', v:44100, time:'7 小時前'},
+      {t:'頒獎典禮紅毯造型盤點', tag:'時尚', v:38900, time:'8 小時前'},
+    ]},
+  { id:'udn', name:'聯合新聞網', color:'#1D4ED8',
+    hot:{ title:'天團宣布世界巡演台灣站 一票難求', views:142300, time:'28 分鐘前' },
+    top10:[
+      {t:'天團宣布世界巡演台灣站 一票難求', tag:'音樂', v:142300, time:'28 分前'},
+      {t:'新生代演員演技受讚 電影票房開紅盤', tag:'電影', v:88700, time:'1 小時前'},
+      {t:'資深主持人退居幕後 交棒感言曝光', tag:'綜藝', v:71200, time:'2 小時前'},
+      {t:'網紅跨界拍戲 首部作品預告釋出', tag:'戲劇星聞', v:67500, time:'3 小時前'},
+      {t:'演唱會安可場加開 秒殺搶票畫面曝光', tag:'音樂', v:63100, time:'4 小時前'},
+      {t:'知名主播轉戰戲劇圈 首秀反應兩極', tag:'焦點', v:52400, time:'4 小時前'},
+      {t:'導演新作入選影展 幕後花絮首度公開', tag:'電影', v:47800, time:'5 小時前'},
+      {t:'夯劇大結局 收視創年度新高', tag:'戲劇星聞', v:45200, time:'6 小時前'},
+      {t:'選秀新人出道曲MV上線秒破百萬', tag:'音樂', v:41000, time:'7 小時前'},
+      {t:'綜藝節目改版 主持群大換血', tag:'綜藝', v:36600, time:'8 小時前'},
+    ]},
+  { id:'vl', name:'緯來新聞', color:'#F97316',
+    hot:{ title:'韓劇男神來台宣傳 機場接機萬人擠爆', views:118400, time:'35 分鐘前' },
+    top10:[
+      {t:'韓劇男神來台宣傳 機場接機萬人擠爆', tag:'國際星聞', v:118400, time:'35 分前'},
+      {t:'日本天團首唱新曲 舞台畫面瘋傳', tag:'音樂', v:79600, time:'1 小時前'},
+      {t:'台劇授權海外播映 製作團隊回應', tag:'戲劇星聞', v:58300, time:'2 小時前'},
+      {t:'棒球明星轉戰主持 首集笑料百出', tag:'綜藝', v:51900, time:'3 小時前'},
+      {t:'韓綜藝台灣站錄影 卡司陣容公開', tag:'綜藝', v:47600, time:'4 小時前'},
+      {t:'陸劇來台開拍 演員陣容引熱議', tag:'戲劇星聞', v:42100, time:'5 小時前'},
+      {t:'日本聲優來台簽名會 排隊人潮驚人', tag:'焦點', v:37800, time:'6 小時前'},
+      {t:'韓星社群曬台灣美食 掀朝聖潮', tag:'國際星聞', v:33500, time:'7 小時前'},
+      {t:'台日合拍電影開機儀式全紀錄', tag:'電影', v:29900, time:'8 小時前'},
+      {t:'韓國偶像劇原聲帶登台熱銷', tag:'音樂', v:26400, time:'9 小時前'},
+    ]},
+  { id:'ettoday', name:'東森新聞', color:'#059669',
+    hot:{ title:'女星曬孕肚照 甜蜜宣布二胎喜訊', views:151200, time:'19 分鐘前' },
+    top10:[
+      {t:'女星曬孕肚照 甜蜜宣布二胎喜訊', tag:'焦點', v:151200, time:'19 分前'},
+      {t:'男星深夜發文 疑似暗示婚變引熱議', tag:'焦點', v:112800, time:'55 分前'},
+      {t:'選秀節目決賽夜 冠軍名單意外曝光', tag:'綜藝', v:84300, time:'1 小時前'},
+      {t:'新戲開拍記者會 主演互動甜蜜', tag:'戲劇星聞', v:73100, time:'2 小時前'},
+      {t:'歌手新專輯首波主打MV上線', tag:'音樂', v:66700, time:'3 小時前'},
+      {t:'資深藝人回顧演藝生涯 感性談退休計畫', tag:'焦點', v:58900, time:'4 小時前'},
+      {t:'電影首週票房出爐 打敗同期強片', tag:'電影', v:51200, time:'5 小時前'},
+      {t:'綜藝主持人烏龍口誤 全場笑翻', tag:'綜藝', v:46500, time:'6 小時前'},
+      {t:'偶像團體應援色曝光 粉絲搶購周邊', tag:'音樂', v:39800, time:'7 小時前'},
+      {t:'演員片場花絮曝光 敬業程度獲讚', tag:'戲劇星聞', v:34200, time:'8 小時前'},
+    ]},
+  { id:'setn', name:'三立新聞網', color:'#DC2626',
+    hot:{ title:'夯劇收視奪冠 主演慶功宴畫面曝光', views:133700, time:'24 分鐘前' },
+    top10:[
+      {t:'夯劇收視奪冠 主演慶功宴畫面曝光', tag:'戲劇星聞', v:133700, time:'24 分前'},
+      {t:'金曲歌王開唱 安可曲清單全紀錄', tag:'音樂', v:97400, time:'1 小時前'},
+      {t:'綜藝天后復出 重返主持台首集回顧', tag:'綜藝', v:80600, time:'2 小時前'},
+      {t:'新生代演員入圍海外影展 感言曝光', tag:'電影', v:68200, time:'3 小時前'},
+      {t:'網路劇改編電影版 選角名單公開', tag:'戲劇星聞', v:59700, time:'4 小時前'},
+      {t:'演員參與公益活動 現身弱勢關懷', tag:'焦點', v:52300, time:'4 小時前'},
+      {t:'選秀節目黑馬逆襲 討論度飆升', tag:'綜藝', v:47100, time:'5 小時前'},
+      {t:'天團演唱會周邊秒殺 排隊人潮曝光', tag:'音樂', v:41800, time:'6 小時前'},
+      {t:'知名導演開拍新片 卡司陣容堅強', tag:'電影', v:36400, time:'7 小時前'},
+      {t:'藝人自曝減重心得 前後對比驚人', tag:'焦點', v:31900, time:'8 小時前'},
+    ]},
+  { id:'ltn', name:'自由娛樂', color:'#0891B2',
+    hot:{ title:'金馬影后新片首映 造型全解析', views:109500, time:'47 分鐘前' },
+    top10:[
+      {t:'金馬影后新片首映 造型全解析', tag:'電影', v:109500, time:'47 分前'},
+      {t:'人氣女團回歸曲舞蹈挑戰掀熱潮', tag:'音樂', v:87300, time:'1 小時前'},
+      {t:'綜藝節目十週年特輯 歷屆嘉賓回顧', tag:'綜藝', v:70100, time:'2 小時前'},
+      {t:'新劇卡司公開 老戲骨加盟引期待', tag:'戲劇星聞', v:62800, time:'3 小時前'},
+      {t:'歌手公益演唱會 全數收入捐助弱勢', tag:'焦點', v:55600, time:'4 小時前'},
+      {t:'演員海外拍片花絮 異國風光曝光', tag:'電影', v:48900, time:'5 小時前'},
+      {t:'選秀學員畢業公演 感動全場落淚', tag:'綜藝', v:43200, time:'6 小時前'},
+      {t:'樂團暌違多年發新專輯 粉絲引頸期盼', tag:'音樂', v:37700, time:'7 小時前'},
+      {t:'偶像劇取景秘境曝光 帶動觀光熱潮', tag:'戲劇星聞', v:32500, time:'8 小時前'},
+      {t:'藝人生日會驚喜安排 感動落淚', tag:'焦點', v:28100, time:'9 小時前'},
+    ]},
+  { id:'chinatimes', name:'中時電子報', color:'#7C3AED',
+    hot:{ title:'兩岸合拍劇殺青 卡司互動花絮曝光', views:98200, time:'53 分鐘前' },
+    top10:[
+      {t:'兩岸合拍劇殺青 卡司互動花絮曝光', tag:'戲劇星聞', v:98200, time:'53 分前'},
+      {t:'資深演員獲終身成就獎 感言感動全場', tag:'電影', v:76500, time:'1 小時前'},
+      {t:'歌唱選秀複賽開打 評審點評成焦點', tag:'綜藝', v:64300, time:'2 小時前'},
+      {t:'樂壇新人出道記者會 首唱曲目曝光', tag:'音樂', v:56700, time:'3 小時前'},
+      {t:'知名主持人低調結婚 好友曝細節', tag:'焦點', v:49800, time:'4 小時前'},
+      {t:'電影角逐海外大獎 導演出席造勢', tag:'電影', v:42600, time:'5 小時前'},
+      {t:'綜藝特輯重現經典橋段 網友直呼懷念', tag:'綜藝', v:37300, time:'6 小時前'},
+      {t:'偶像團體出道週年 應援活動全紀錄', tag:'音樂', v:32900, time:'7 小時前'},
+      {t:'新戲角色海報一次公開 造型引討論', tag:'戲劇星聞', v:28400, time:'8 小時前'},
+      {t:'藝人現身機場 低調裝扮遮不住星光', tag:'焦點', v:24700, time:'9 小時前'},
+    ]},
+  { id:'nownews', name:'NOWnews', color:'#EA580C',
+    hot:{ title:'直播主跨界主持 首秀收視報喜', views:87600, time:'1 小時前' },
+    top10:[
+      {t:'直播主跨界主持 首秀收視報喜', tag:'綜藝', v:87600, time:'1 小時前'},
+      {t:'新生代歌手線上演唱會 觀看人次創紀錄', tag:'音樂', v:74200, time:'2 小時前'},
+      {t:'網路劇口碑爆棚 續集開拍確定', tag:'戲劇星聞', v:61800, time:'2 小時前'},
+      {t:'網紅合體拍片 花絮笑料不斷', tag:'焦點', v:53400, time:'3 小時前'},
+      {t:'新片預售票房亮眼 提前加場', tag:'電影', v:46900, time:'4 小時前'},
+      {t:'選秀節目網路投票開跑 討論度飆升', tag:'綜藝', v:40200, time:'5 小時前'},
+      {t:'獨立音樂人小型演出爆滿 圈內關注', tag:'音樂', v:34600, time:'6 小時前'},
+      {t:'網劇演員社群互動 幕後花絮曝光', tag:'戲劇星聞', v:29800, time:'7 小時前'},
+      {t:'藝人開箱生活日常 意外掀討論', tag:'焦點', v:25100, time:'8 小時前'},
+      {t:'電影幕後製作特輯釋出 特效解密', tag:'電影', v:21700, time:'9 小時前'},
+    ]},
+  { id:'appledaily', name:'壹蘋新聞', color:'#BE123C',
+    hot:{ title:'豪門婚宴排場曝光 賓客陣容驚人', views:167800, time:'15 分鐘前' },
+    top10:[
+      {t:'豪門婚宴排場曝光 賓客陣容驚人', tag:'焦點', v:167800, time:'15 分前'},
+      {t:'藝人深夜返家畫面 疑似戀情露餡', tag:'焦點', v:139200, time:'40 分前'},
+      {t:'夫妻藝人同框放閃 甜蜜互動曝光', tag:'焦點', v:98700, time:'1 小時前'},
+      {t:'女星機場穿搭全紀錄 時尚品味獲讚', tag:'時尚', v:82400, time:'2 小時前'},
+      {t:'綜藝節目錄影直擊 幕後花絮流出', tag:'綜藝', v:69300, time:'3 小時前'},
+      {t:'知名歌手健檢報告曝光 粉絲關心', tag:'焦點', v:58600, time:'4 小時前'},
+      {t:'新戲開鏡祭拜儀式 卡司低調亮相', tag:'戲劇星聞', v:49700, time:'5 小時前'},
+      {t:'演員海外度假照曝光 身材再引話題', tag:'焦點', v:41300, time:'6 小時前'},
+      {t:'藝人捐款做公益 低調行善曝光', tag:'焦點', v:34800, time:'7 小時前'},
+      {t:'電影上映首日票房出爐 口碑兩極', tag:'電影', v:28900, time:'8 小時前'},
+    ]},
+  { id:'mnews', name:'鏡新聞', color:'#0D9488',
+    hot:{ title:'知名製作人專訪 揭幕後製作內幕', views:76300, time:'1 小時前' },
+    top10:[
+      {t:'知名製作人專訪 揭幕後製作內幕', tag:'幕後', v:76300, time:'1 小時前'},
+      {t:'金曲入圍名單公布 各獎項角逐分析', tag:'音樂', v:68900, time:'2 小時前'},
+      {t:'演員深度專訪 談角色詮釋心路歷程', tag:'戲劇星聞', v:57200, time:'3 小時前'},
+      {t:'電影產業觀察 談台灣類型片新趨勢', tag:'電影', v:48600, time:'4 小時前'},
+      {t:'綜藝幕後團隊揭密 節目製作全紀錄', tag:'綜藝', v:41100, time:'5 小時前'},
+      {t:'獨家專訪新生代導演 談創作理念', tag:'電影', v:35700, time:'6 小時前'},
+      {t:'音樂人談創作歷程 新專輯概念曝光', tag:'音樂', v:29900, time:'7 小時前'},
+      {t:'戲劇編劇專訪 談劇本改編挑戰', tag:'戲劇星聞', v:25400, time:'8 小時前'},
+      {t:'演藝圈世代交替現象觀察報導', tag:'焦點', v:21600, time:'9 小時前'},
+      {t:'幕後花絮系列 特效團隊工作全紀錄', tag:'電影', v:18300, time:'10 小時前'},
+    ]},
+  { id:'mirrorweekly', name:'鏡週刊', color:'#B45309',
+    hot:{ title:'獨家直擊！藝人約會行程全紀錄', views:184500, time:'12 分鐘前' },
+    top10:[
+      {t:'獨家直擊！藝人約會行程全紀錄', tag:'獨家', v:184500, time:'12 分前'},
+      {t:'豪宅曝光 藝人置產動向一次看', tag:'獨家', v:145700, time:'38 分前'},
+      {t:'深夜聚餐直擊 同行成員身分成謎', tag:'獨家', v:112300, time:'1 小時前'},
+      {t:'婚姻狀況追蹤報導 雙方經紀人回應', tag:'焦點', v:91600, time:'2 小時前'},
+      {t:'財力大公開 藝人副業版圖曝光', tag:'焦點', v:76800, time:'3 小時前'},
+      {t:'健身教練直擊 私下訓練菜單流出', tag:'焦點', v:64200, time:'4 小時前'},
+      {t:'家族聚會照曝光 罕見全家福公開', tag:'焦點', v:53500, time:'5 小時前'},
+      {t:'低調行程直擊 疑似籌備新計畫', tag:'獨家', v:44700, time:'6 小時前'},
+      {t:'私人度假地點曝光 隨行人員身分起底', tag:'焦點', v:37200, time:'7 小時前'},
+      {t:'社群刪文追蹤 網友起底始末', tag:'焦點', v:30800, time:'8 小時前'},
+    ]},
+  { id:'cna', name:'中央社', color:'#16A34A',
+    hot:{ title:'金曲入圍名單公布 歌手謝票感言曝光', views:71400, time:'50 分鐘前' },
+    top10:[
+      {t:'金曲入圍名單公布 歌手謝票感言曝光', tag:'音樂', v:71400, time:'50 分前'},
+      {t:'國片代表角逐海外影展 導演出席記者會', tag:'電影', v:58200, time:'1 小時前'},
+      {t:'公視戲劇入圍國際獎項 製作團隊發聲', tag:'戲劇星聞', v:49700, time:'2 小時前'},
+      {t:'藝文特展開幕 藝人現身站台', tag:'焦點', v:41300, time:'3 小時前'},
+      {t:'流行音樂產業報告出爐 串流成長顯著', tag:'產業', v:34800, time:'4 小時前'},
+      {t:'國際巨星來台開唱 主辦單位公布防疫措施', tag:'音樂', v:29600, time:'5 小時前'},
+      {t:'表演藝術補助名單公布 團隊表達感謝', tag:'產業', v:24100, time:'6 小時前'},
+      {t:'金馬影展選片指南出爐 影迷搶票攻略', tag:'電影', v:19700, time:'7 小時前'},
+      {t:'廣播金鐘獎頒獎典禮 得獎名單一次看', tag:'焦點', v:16200, time:'8 小時前'},
+      {t:'文化部公布年度扶植計畫 新秀創作者受矚目', tag:'產業', v:13400, time:'9 小時前'},
+    ]},
+  { id:'ftv', name:'民視', color:'#0EA5E9',
+    hot:{ title:'綜藝天王重返主持台 老搭檔驚喜合體', views:68900, time:'1 小時前' },
+    top10:[
+      {t:'綜藝天王重返主持台 老搭檔驚喜合體', tag:'綜藝', v:68900, time:'1 小時前'},
+      {t:'選秀節目魔王考題出爐 學員哀嚎全場笑翻', tag:'綜藝', v:55600, time:'2 小時前'},
+      {t:'歌唱競賽踢館賽開打 挑戰者實力獲讚', tag:'音樂', v:47100, time:'3 小時前'},
+      {t:'綜藝特輯重現經典遊戲橋段 網友直呼懷念', tag:'綜藝', v:39800, time:'4 小時前'},
+      {t:'台語劇收視報喜 主演談角色詮釋', tag:'戲劇星聞', v:33200, time:'5 小時前'},
+      {t:'外景單元直擊在地美食 主持群大快朵頤', tag:'綜藝', v:27500, time:'6 小時前'},
+      {t:'歌唱節目評審犀利點評 引發網路熱議', tag:'音樂', v:22900, time:'7 小時前'},
+      {t:'綜藝節目公益企劃 邀弱勢團體同樂', tag:'焦點', v:18600, time:'8 小時前'},
+      {t:'選秀學員畢業公演 感動全場落淚', tag:'綜藝', v:15100, time:'9 小時前'},
+      {t:'節目十週年特輯 歷屆嘉賓齊聚回顧', tag:'綜藝', v:12300, time:'10 小時前'},
+    ]},
+  { id:'gtv', name:'八大電視', color:'#DB2777',
+    hot:{ title:'八點檔收視奪冠 主演慶功宴畫面曝光', views:79300, time:'45 分鐘前' },
+    top10:[
+      {t:'八點檔收視奪冠 主演慶功宴畫面曝光', tag:'戲劇星聞', v:79300, time:'45 分前'},
+      {t:'娛樂新聞節目專訪 藝人首談復出計畫', tag:'焦點', v:64700, time:'1 小時前'},
+      {t:'偶像劇選角公布 新生代演員獲肯定', tag:'戲劇星聞', v:53400, time:'2 小時前'},
+      {t:'綜藝主持群默契考驗 遊戲環節笑料不斷', tag:'綜藝', v:44900, time:'3 小時前'},
+      {t:'戲劇台重播經典劇集 老粉絲回味無窮', tag:'戲劇星聞', v:37600, time:'4 小時前'},
+      {t:'歌唱選秀複賽開打 評審點評成焦點', tag:'音樂', v:31200, time:'5 小時前'},
+      {t:'娛樂台特輯直擊拍攝現場 幕後花絮曝光', tag:'焦點', v:25800, time:'6 小時前'},
+      {t:'戲劇角色海報公開 造型引討論', tag:'戲劇星聞', v:21100, time:'7 小時前'},
+      {t:'綜藝節目公益募款 藝人齊力響應', tag:'焦點', v:17400, time:'8 小時前'},
+      {t:'戲劇殺青記者會 卡司互動曝光', tag:'戲劇星聞', v:14200, time:'9 小時前'},
+    ]},
+];
+
+function fmtViews(n){
+  if(n==null) return null;
+  if(n>=10000) return (n/10000).toFixed(1)+'萬';
+  return n.toString();
+}
+
+// 直接把最近一次驗證過的真實資料內嵌在頁面裡，這樣就算用瀏覽器直接開啟本機檔案
+// （file:// 開頭的網址）也看得到，不會被瀏覽器擋掉本機檔案間互相讀取的安全限制。
+// 之後如果把這個資料夾放到網站上（例如 GitHub Pages），會改成優先讀取同層的 data.json。
+const EMBEDDED_LIVE_DATA = {"generated_at": "2026-08-04T10:30:00+08:00", "note": "手動驗證快照：自由娛樂為即時真實抓取（來源 ent.ltn.com.tw，抓取當下顯示為幾小時內的內容）。其餘 13 家已在 config.py 接上官方 RSS 或 YouTube 頻道，但在目前這個對話環境中被 robots 規則擋下、抓不到，需要在你自己電腦或 GitHub Actions（一般網路環境）實際執行 fetch_media.py 才會抓到內容。", "media": [{"id": "ltn", "name": "自由娛樂", "color": "#0891B2", "status": "ok (verified live)", "items": [{"title": "Elly還原小S娛百開場 揭童年被媽媽罰跪", "tag": "娛樂", "time": "6 小時前", "link": "https://ent.ltn.com.tw/breakingnews"}, {"title": "（直擊）RIIZE抵小港熱爆！搞錯高雄天氣「全員長袖」500人接機快掀屋頂", "tag": "日韓", "time": "1 天前", "link": "https://ent.ltn.com.tw/breakingnews"}, {"title": "（直擊）元彬帥炸！RIIZE唱一半熱到脫了 霸氣放話「要上高雄世運」", "tag": "日韓", "time": "19 小時前", "link": "https://ent.ltn.com.tw/breakingnews"}, {"title": "（直擊）SJ藝聲好緊張！見「寶藍色燈海」鬆口氣：獲得很大勇氣", "tag": "日韓", "time": "1 天前", "link": "https://ent.ltn.com.tw/breakingnews"}, {"title": "邱澤許瑋甯補辦婚禮 互換誓詞動人時刻曝光", "tag": "戲劇星聞", "time": "今日", "link": "https://ent.ltn.com.tw/breakingnews"}, {"title": "貝克漢全家靠世足集體鍍金 15歲愛女哈珀成最大黑馬", "tag": "歐美", "time": "今日", "link": "https://ent.ltn.com.tw/breakingnews"}, {"title": "吳宗憲返台機捷「違規大嗑冰淇淋」目擊者還原現場", "tag": "娛樂時尚", "time": "今日", "link": "https://ent.ltn.com.tw/breakingnews"}, {"title": "「嵐」活動落幕首部新戲 相葉雅紀《大追跡2》開戰AI高科技犯罪", "tag": "日韓", "time": "今日", "link": "https://ent.ltn.com.tw/breakingnews"}, {"title": "前主播劉涵竹曝友人炒股半年賺數億 照常上班另一半被瞞在鼓裡", "tag": "娛樂", "time": "今日", "link": "https://ent.ltn.com.tw/breakingnews"}, {"title": "水果奶奶28年沒有崩壞 親曝凍齡秘訣：不要刻意減肥", "tag": "娛樂", "time": "今日", "link": "https://ent.ltn.com.tw/breakingnews"}]}, {"id": "udn", "name": "聯合新聞網", "color": "#1D4ED8", "status": "pending (需實際執行 YouTube 來源)", "items": []}, {"id": "ettoday", "name": "東森新聞", "color": "#059669", "status": "pending (需實際執行 YouTube 來源)", "items": []}, {"id": "setn", "name": "三立新聞網", "color": "#DC2626", "status": "pending (需實際執行 YouTube 來源)", "items": []}, {"id": "chinatimes", "name": "中時電子報", "color": "#7C3AED", "status": "pending (需實際執行 YouTube 來源)", "items": []}, {"id": "nownews", "name": "NOWnews", "color": "#EA580C", "status": "pending (需實際執行 YouTube 來源)", "items": []}, {"id": "appledaily", "name": "壹蘋新聞", "color": "#BE123C", "status": "pending (需實際執行 YouTube 來源)", "items": []}, {"id": "mnews", "name": "鏡新聞", "color": "#0D9488", "status": "pending (需實際執行 YouTube 來源)", "items": []}, {"id": "mirrorweekly", "name": "鏡週刊", "color": "#B45309", "status": "pending (需實際執行 YouTube 來源)", "items": []}, {"id": "tvbs", "name": "TVBS", "color": "#E63946", "status": "pending (需實際執行 YouTube 來源)", "items": []}, {"id": "vl", "name": "緯來新聞", "color": "#F97316", "status": "pending (需實際執行 YouTube 來源)", "items": []}, {"id": "cna", "name": "中央社", "color": "#16A34A", "status": "pending (需實際執行 RSS 來源)", "items": []}, {"id": "ftv", "name": "民視", "color": "#0EA5E9", "status": "pending (需實際執行 YouTube 來源)", "items": []}, {"id": "gtv", "name": "八大電視", "color": "#DB2777", "status": "pending (需實際執行 YouTube 來源)", "items": []}]};
+
+let media = SAMPLE_MEDIA;
+
+const wall = document.getElementById('wall');
+const panelWrap = document.getElementById('panelWrap');
+const emptyHint = document.getElementById('emptyHint');
+const panelBadge = document.getElementById('panelBadge');
+const panelTitle = document.getElementById('panelTitle');
+const rowsWrap = document.getElementById('rowsWrap');
+const dataBanner = document.getElementById('dataBanner');
+const dataBannerText = document.getElementById('dataBannerText');
+
+function renderWall(){
+  wall.innerHTML = '';
+  media.forEach(m=>{
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.dataset.id = m.id;
+    const views = fmtViews(m.hot.views);
+    tile.innerHTML = `
+      <div class="tile-top">
+        <span class="badge" style="background:${m.color}">${m.name}</span>
+        <span class="chan-dot" style="background:${m.color}"></span>
+      </div>
+      <div class="thumb" style="background:${m.color}22">
+        <div class="scan"></div>
+        <div class="play"></div>
+      </div>
+      <div class="tile-body">
+        <div class="tile-title">${m.hot.title}</div>
+        <div class="tile-meta">
+          ${views ? `<span class="heat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C12 2 6 9 6 14a6 6 0 0 0 12 0c0-2-1-3-1-3s-1 2-2 2c1-3-1-6-3-11z"/></svg>${views}</span>` : `<span class="heat">熱門 #1</span>`}
+          <span class="time mono">${m.hot.time}</span>
+        </div>
+      </div>
+    `;
+    tile.addEventListener('click', ()=> selectMedia(m.id));
+    wall.appendChild(tile);
+  });
+}
+
+function selectMedia(id){
+  const m = media.find(x=>x.id===id);
+  if(!m) return;
+  document.querySelectorAll('.tile').forEach(t=> t.classList.toggle('active', t.dataset.id===id));
+
+  panelBadge.textContent = m.name;
+  panelBadge.style.background = m.color;
+  panelTitle.textContent = m.name + ' ・ 今日娛樂影音 TOP 10';
+
+  rowsWrap.innerHTML = m.top10.length ? m.top10.map((r,i)=>{
+    const views = fmtViews(r.v);
+    const titleHtml = `<span class="tag">${r.tag}</span>${r.t}`;
+    const titleCell = r.link
+      ? `<a href="${r.link}" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">${titleHtml}</a>`
+      : titleHtml;
+    return `
+    <div class="row">
+      <div class="rank mono">${String(i+1).padStart(2,'0')}</div>
+      <div class="row-title">${titleCell}</div>
+      <div class="row-views mono">${views ?? '站方排序'}</div>
+      <div class="row-time mono">${r.time}</div>
+    </div>`;
+  }).join('') : `<div class="row" style="grid-template-columns: 1fr;"><div class="row-title" style="color:var(--text-faint);">${m.hot.title}</div></div>`;
+
+  panelWrap.classList.add('show');
+  emptyHint.style.display = 'none';
+  panelWrap.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+document.getElementById('closeBtn').addEventListener('click', ()=>{
+  panelWrap.classList.remove('show');
+  emptyHint.style.display = 'block';
+  document.querySelectorAll('.tile').forEach(t=> t.classList.remove('active'));
+});
+
+function updateClock(ts){
+  const d = ts ? new Date(ts) : new Date();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  document.getElementById('statUpdated').textContent = hh+':'+mm;
+}
+
+function normalizeLiveMedia(payload){
+  return payload.media.map(m=>{
+    const items = (m.items||[]).map((it,i)=>({
+      t: it.title, tag: it.tag||'娛樂', time: it.time||'', link: it.link||'', v:null, rank:i+1
+    }));
+    const pendingMsg = m.status && m.status.startsWith('pending')
+      ? '尚未取得資料 — ' + m.status.replace('pending ', '').replace(/[()]/g, '')
+      : '（目前抓不到資料，selector 需調整）';
+    return {
+      id: m.id, name: m.name, color: m.color,
+      status: m.status,
+      hot: items[0] ? { title: items[0].t, time: items[0].time, views:null } : { title: pendingMsg, time:'', views:null },
+      top10: items
+    };
+  });
+}
+
+function applyPayload(payload, sourceLabel){
+  media = normalizeLiveMedia(payload);
+  renderWall();
+  updateClock(payload.generated_at);
+  dataBanner.style.borderLeftColor = 'var(--rank)';
+  dataBannerText.innerHTML = `<b>已載入即時資料</b>（${sourceLabel}，產生於 ${payload.generated_at}）。標示「尚未取得資料」的媒體，代表頻道已接好、但還沒有實際執行抓取，不是壞掉。`;
+}
+
+async function loadLiveData(){
+  // 先試著讀同層的 data.json（放到網站上跑過 fetch_media.py 之後，這裡會是最新的）。
+  try{
+    const res = await fetch('data.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('no data.json');
+    const payload = await res.json();
+    applyPayload(payload, 'data.json');
+    return;
+  }catch(e){
+    // 用瀏覽器直接開本機檔案時，fetch 本機檔案會被瀏覽器擋下（這是正常的安全限制，
+    // 不是網頁壞掉），這時改用內嵌在頁面裡的資料。
+  }
+
+  if (EMBEDDED_LIVE_DATA && EMBEDDED_LIVE_DATA.media && EMBEDDED_LIVE_DATA.media.length) {
+    applyPayload(EMBEDDED_LIVE_DATA, '頁面內嵌快照');
+    return;
+  }
+
+  media = SAMPLE_MEDIA;
+  renderWall();
+  updateClock();
+  dataBannerText.innerHTML = `<b>目前為示範資料</b>：執行 <code class="mono">scraper/fetch_media.py</code> 產生 data.json 並放在同一層資料夾，重新整理頁面即可切換成即時內容。`;
+}
+
+loadLiveData();
+setInterval(loadLiveData, 5*60*1000);
+</script>
+</body>
+</html>
