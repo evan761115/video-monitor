@@ -1,72 +1,71 @@
 {
-  "generated_at": "2026-08-04T10:30:00+08:00",
-  "note": "手動驗證快照：自由娛樂為即時真實抓取（來源 ent.ltn.com.tw，抓取當下顯示為幾小時內的內容）。其餘 13 家已在 config.py 接上官方 RSS 或 YouTube 頻道，但在目前這個對話環境中被 robots 規則擋下、抓不到，需要在你自己電腦或 GitHub Actions（一般網路環境）實際執行 fetch_media.py 才會抓到內容。",
+  "generated_at": "2026-08-04T04:16:16+00:00",
   "media": [
     {
       "id": "ltn",
       "name": "自由娛樂",
       "color": "#0891B2",
-      "status": "ok (verified live)",
+      "status": "ok",
       "items": [
         {
-          "title": "Elly還原小S娛百開場 揭童年被媽媽罰跪",
-          "tag": "娛樂",
-          "time": "6 小時前",
-          "link": "https://ent.ltn.com.tw/breakingnews"
+          "title": "恭喜！陳佩賢宣布「結婚」 戀愛公告喜帖流出新郎背景曝光",
+          "link": "https://ent.ltn.com.tw/news/breakingnews/5527880",
+          "time": "08/04 04:08",
+          "tag": "娛樂"
         },
         {
-          "title": "（直擊）RIIZE抵小港熱爆！搞錯高雄天氣「全員長袖」500人接機快掀屋頂",
-          "tag": "日韓",
-          "time": "1 天前",
-          "link": "https://ent.ltn.com.tw/breakingnews"
+          "title": "被問「大哥，你還活著嗎？」 486先生怎麼了",
+          "link": "https://ent.ltn.com.tw/news/breakingnews/5527854",
+          "time": "08/04 04:01",
+          "tag": "娛樂"
         },
         {
-          "title": "（直擊）元彬帥炸！RIIZE唱一半熱到脫了 霸氣放話「要上高雄世運」",
-          "tag": "日韓",
-          "time": "19 小時前",
-          "link": "https://ent.ltn.com.tw/breakingnews"
+          "title": "熊本地震感受台灣溫暖 一青窈9月來台開唱：換我用歌聲回報",
+          "link": "https://ent.ltn.com.tw/news/breakingnews/5527859",
+          "time": "08/04 03:46",
+          "tag": "娛樂"
         },
         {
-          "title": "（直擊）SJ藝聲好緊張！見「寶藍色燈海」鬆口氣：獲得很大勇氣",
-          "tag": "日韓",
-          "time": "1 天前",
-          "link": "https://ent.ltn.com.tw/breakingnews"
+          "title": "韓劇不敢這樣演！韓娛樂公司代表涉「300億詐欺」遭羈押",
+          "link": "https://ent.ltn.com.tw/news/breakingnews/5527849",
+          "time": "08/04 03:45",
+          "tag": "娛樂"
         },
         {
-          "title": "邱澤許瑋甯補辦婚禮 互換誓詞動人時刻曝光",
-          "tag": "戲劇星聞",
-          "time": "今日",
-          "link": "https://ent.ltn.com.tw/breakingnews"
+          "title": "《X檔案》史考特海蘭斯驚傳過世   享壽83歲",
+          "link": "https://ent.ltn.com.tw/news/breakingnews/5527819",
+          "time": "08/04 03:38",
+          "tag": "娛樂"
         },
         {
-          "title": "貝克漢全家靠世足集體鍍金 15歲愛女哈珀成最大黑馬",
-          "tag": "歐美",
-          "time": "今日",
-          "link": "https://ent.ltn.com.tw/breakingnews"
+          "title": "「印尼五月天」驚喜登台飆歌！Wonstein突撂中文問候粉絲",
+          "link": "https://ent.ltn.com.tw/news/breakingnews/5527826",
+          "time": "08/04 03:30",
+          "tag": "娛樂"
         },
         {
-          "title": "吳宗憲返台機捷「違規大嗑冰淇淋」目擊者還原現場",
-          "tag": "娛樂時尚",
-          "time": "今日",
-          "link": "https://ent.ltn.com.tw/breakingnews"
+          "title": "更年期最大好處    56歲丁寧：懂得心疼自己",
+          "link": "https://ent.ltn.com.tw/news/breakingnews/5527783",
+          "time": "08/04 03:20",
+          "tag": "娛樂"
         },
         {
-          "title": "「嵐」活動落幕首部新戲 相葉雅紀《大追跡2》開戰AI高科技犯罪",
-          "tag": "日韓",
-          "time": "今日",
-          "link": "https://ent.ltn.com.tw/breakingnews"
+          "title": "米可白結緣毛小孩 原來從小時候就開始了",
+          "link": "https://ent.ltn.com.tw/news/breakingnews/5527782",
+          "time": "08/04 03:11",
+          "tag": "娛樂"
         },
         {
-          "title": "前主播劉涵竹曝友人炒股半年賺數億 照常上班另一半被瞞在鼓裡",
-          "tag": "娛樂",
-          "time": "今日",
-          "link": "https://ent.ltn.com.tw/breakingnews"
+          "title": "寶萊塢男星以「賤民角」狂掃5影帝 竟不知「坎城」怎麼唸",
+          "link": "https://ent.ltn.com.tw/news/breakingnews/5527801",
+          "time": "08/04 03:10",
+          "tag": "娛樂"
         },
         {
-          "title": "水果奶奶28年沒有崩壞 親曝凍齡秘訣：不要刻意減肥",
-          "tag": "娛樂",
-          "time": "今日",
-          "link": "https://ent.ltn.com.tw/breakingnews"
+          "title": "好久不見港星杜德偉  悄悄來台快閃2天2夜",
+          "link": "https://ent.ltn.com.tw/news/breakingnews/5527675",
+          "time": "08/04 02:55",
+          "tag": "娛樂"
         }
       ]
     },
@@ -74,91 +73,213 @@
       "id": "udn",
       "name": "聯合新聞網",
       "color": "#1D4ED8",
-      "status": "pending (需實際執行 YouTube 來源)",
+      "status": "empty",
       "items": []
     },
     {
       "id": "ettoday",
       "name": "東森新聞",
       "color": "#059669",
-      "status": "pending (需實際執行 YouTube 來源)",
+      "status": "empty",
       "items": []
     },
     {
       "id": "setn",
       "name": "三立新聞網",
       "color": "#DC2626",
-      "status": "pending (需實際執行 YouTube 來源)",
+      "status": "empty",
       "items": []
     },
     {
       "id": "chinatimes",
       "name": "中時電子報",
       "color": "#7C3AED",
-      "status": "pending (需實際執行 YouTube 來源)",
+      "status": "empty",
       "items": []
     },
     {
       "id": "nownews",
       "name": "NOWnews",
       "color": "#EA580C",
-      "status": "pending (需實際執行 YouTube 來源)",
+      "status": "empty",
       "items": []
     },
     {
       "id": "appledaily",
       "name": "壹蘋新聞",
       "color": "#BE123C",
-      "status": "pending (需實際執行 YouTube 來源)",
+      "status": "empty",
       "items": []
     },
     {
       "id": "mnews",
       "name": "鏡新聞",
       "color": "#0D9488",
-      "status": "pending (需實際執行 YouTube 來源)",
+      "status": "empty",
       "items": []
     },
     {
       "id": "mirrorweekly",
       "name": "鏡週刊",
       "color": "#B45309",
-      "status": "pending (需實際執行 YouTube 來源)",
+      "status": "empty",
       "items": []
     },
     {
       "id": "tvbs",
       "name": "TVBS",
       "color": "#E63946",
-      "status": "pending (需實際執行 YouTube 來源)",
-      "items": []
+      "status": "ok",
+      "items": [
+        {
+          "title": "【T TALK】哈林庾澄慶首談兒子恩利! 自爆考過0分: 「第一名根本不重要」｜TVBS新聞 @tvbsenews",
+          "link": "https://www.youtube.com/watch?v=Q7001CIws0A",
+          "time": "08/03 09:00",
+          "tag": "影音"
+        },
+        {
+          "title": "對母親感恩卻不感激！成就超過母親期待！【#真情指數】精華 (1/3)｜#蔡康永 #吳淡如",
+          "link": "https://www.youtube.com/watch?v=L_atEFqtldk",
+          "time": "08/03 06:00",
+          "tag": "影音"
+        },
+        {
+          "title": "68歲田路路被酸「裝可憐騙錢」　直播暴哭怒飆：不是來乞討！｜TVBS娛樂頭條 #shorts",
+          "link": "https://www.youtube.com/shorts/HiqmsDbb2d4",
+          "time": "08/03 04:22",
+          "tag": "影音"
+        },
+        {
+          "title": "2026唐綺陽星座運勢週報(8/3-8/9) #唐綺陽 #星座 #運勢 #週報 #女人我最大",
+          "link": "https://www.youtube.com/watch?v=RIOtzMoHEn4",
+          "time": "08/02 23:00",
+          "tag": "影音"
+        },
+        {
+          "title": "T爆娛樂／VERA全員演技大爆發！蔡朕扛冠軍壓力　Nelson 3秒落淚｜TVBS娛樂頭條",
+          "link": "https://www.youtube.com/watch?v=h4cmzuN8zII",
+          "time": "08/02 14:00",
+          "tag": "影音"
+        },
+        {
+          "title": "T爆娛樂／學文動念退團吐重要轉折點　竟和孟維冷戰半年｜TVBS娛樂頭條",
+          "link": "https://www.youtube.com/watch?v=59Tap79BT9I",
+          "time": "08/02 13:00",
+          "tag": "影音"
+        },
+        {
+          "title": "【成語蕎純享版】成語蕎高cp值彩妝不藏私！黃皮校色神器輕鬆就能提亮！Kelly神鞋超貴氣！穿上秒瘦5公斤！#女人我最大",
+          "link": "https://www.youtube.com/watch?v=MxeymBj5V-8",
+          "time": "08/02 10:30",
+          "tag": "影音"
+        },
+        {
+          "title": "郭書瑤因通靈少女從素人變明星？小燕姐虧鄭茵聲單飛比較紅？誤以為這群人解散了！？【小燕有約精華篇】｜張小燕、郭書瑤、鄭茵聲、李千娜",
+          "link": "https://www.youtube.com/watch?v=ZnaRMDn9ScQ",
+          "time": "08/02 09:00",
+          "tag": "影音"
+        },
+        {
+          "title": "李多慧砸85萬在台買車啦！　大方公開車牌「9982」：歡迎打招呼｜TVBS娛樂頭條 #shorts",
+          "link": "https://www.youtube.com/shorts/UjsKJpwPYjc",
+          "time": "08/02 07:13",
+          "tag": "影音"
+        },
+        {
+          "title": "主廚們料理時專注又帥氣沒想到音樂一下...立刻可愛到太犯規！#鄭智善 #川越達也  📺8/29起每週六晚間8點 TVBS42《 #開火開伙 》",
+          "link": "https://www.youtube.com/shorts/QTAEXV6SAsg",
+          "time": "08/02 07:00",
+          "tag": "影音"
+        }
+      ]
     },
     {
       "id": "vl",
       "name": "緯來新聞",
       "color": "#F97316",
-      "status": "pending (需實際執行 YouTube 來源)",
+      "status": "empty",
       "items": []
     },
     {
       "id": "cna",
       "name": "中央社",
       "color": "#16A34A",
-      "status": "pending (需實際執行 RSS 來源)",
-      "items": []
+      "status": "ok",
+      "items": [
+        {
+          "title": "「芭比」續集恐難產　傳華納不願給主演高薪分紅合約",
+          "link": "https://www.cna.com.tw/news/amov/202608030235.aspx",
+          "time": "08/03 09:13",
+          "tag": "娛樂"
+        },
+        {
+          "title": "盼立院不刪凍公視經費　胡元輝：願不領薪水",
+          "link": "https://www.cna.com.tw/news/amov/202608030135.aspx",
+          "time": "08/03 06:09",
+          "tag": "娛樂"
+        },
+        {
+          "title": "健康狀況引關注　亞莉安娜辭演音樂劇暫離公眾視野",
+          "link": "https://www.cna.com.tw/news/amov/202608030014.aspx",
+          "time": "08/03 00:09",
+          "tag": "娛樂"
+        },
+        {
+          "title": "「蜘蛛人」新片首週末全球狂吸9.27億美元　創影史第2",
+          "link": "https://www.cna.com.tw/news/amov/202608030004.aspx",
+          "time": "08/02 19:04",
+          "tag": "娛樂"
+        },
+        {
+          "title": "TPE48迎8週年　完整編制演唱會公開新歌",
+          "link": "https://www.cna.com.tw/news/amov/202608020187.aspx",
+          "time": "08/02 13:17",
+          "tag": "娛樂"
+        },
+        {
+          "title": "馬祖藝術島作品入選法國影展　林羿綺盼凱旋上映",
+          "link": "https://www.cna.com.tw/news/amov/202608020169.aspx",
+          "time": "08/02 11:11",
+          "tag": "娛樂"
+        },
+        {
+          "title": "施南生追思會  林青霞梁朝偉等近百電影人到場",
+          "link": "https://www.cna.com.tw/news/amov/202608020097.aspx",
+          "time": "08/02 06:43",
+          "tag": "娛樂"
+        },
+        {
+          "title": "「黑道家族」重要綠葉文森帕斯托過世　享壽80歲",
+          "link": "https://www.cna.com.tw/news/amov/202608020069.aspx",
+          "time": "08/02 04:51",
+          "tag": "娛樂"
+        },
+        {
+          "title": "F4成員睽違逾20年重返曼谷開唱　粉絲砸萬元圓青春夢",
+          "link": "https://www.cna.com.tw/news/amov/202608010217.aspx",
+          "time": "08/01 14:46",
+          "tag": "娛樂"
+        },
+        {
+          "title": "日星萩原利久抵台先喝珍奶  盼有機會來台拍片",
+          "link": "https://www.cna.com.tw/news/amov/202608010210.aspx",
+          "time": "08/01 13:39",
+          "tag": "娛樂"
+        }
+      ]
     },
     {
       "id": "ftv",
       "name": "民視",
       "color": "#0EA5E9",
-      "status": "pending (需實際執行 YouTube 來源)",
+      "status": "empty",
       "items": []
     },
     {
       "id": "gtv",
       "name": "八大電視",
       "color": "#DB2777",
-      "status": "pending (需實際執行 YouTube 來源)",
+      "status": "empty",
       "items": []
     }
   ]
